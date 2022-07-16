@@ -1,11 +1,9 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package Main;
 
-import Main.DummyData.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -14,25 +12,26 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
 /**
  *
  * @author davidezer
  */
-public class MenuPesan {
+public class MenuTambahStock {
     JFrame frame;
     JLabel labelListBarang, labelNo, labelNama, labelHarga, labelJumlah;
     JLabel[] labelId, labelNamaBarang, labelHargaBarang;
-    JComboBox[] cbStock;
+    JTextField[] tfStock;
     JButton buttonBack, buttonNext;
     
-    ArrayList<dataBarang> barangHead = DummyDataManager.getInstance().getDummyData().getBarangHead();
-    ArrayList<dataBarang> barangGenre = new ArrayList();
-   detailTransaksi tempDetail = DummyDataManager.getInstance().getDummyData().getDetailTransaksiHead();
+    ArrayList<DummyData.dataBarang> barangHead = DummyDataManager.getInstance().getDummyData().getBarangHead();
+    ArrayList<DummyData.dataBarang> barangGenre = new ArrayList();
+   DummyData.detailTransaksi tempDetail = DummyDataManager.getInstance().getDummyData().getDetailTransaksiHead();
    
    
-    public MenuPesan(dataUser head, int idGenre){
+    public MenuTambahStock(DummyData.dataAdmin head, int idGenre){
         frame = new JFrame(Interface.namaApp);
         frame.setSize(600, 400);
         frame.setLocationRelativeTo(null);
@@ -66,36 +65,38 @@ public class MenuPesan {
         buttonBack.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 frame.setVisible(false);
-                new MenuGenre(head);
+                new MenuPilihGenreAdmin(head);
             }
         });
         buttonNext.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 
                 boolean cek = false;
-                String namaBarang;
-                int stock, harga;
+                ArrayList<String> barang = new ArrayList();
+                int counter = 0;
                 
                 for(int i = 0; i < barangGenre.size(); i++){
-                    if(!cbStock[i].getItemAt(cbStock[i].getSelectedIndex()).equals("0")){
-                        detailTransaksi temp = DummyDataManager.getInstance().getDummyData().buatDetailTransaksi();
+                    if(!tfStock[i].getText().equals("")){
                         cek = true;
-                        namaBarang = labelNamaBarang[i].getText();
-                        stock = Integer.parseInt((String)cbStock[i].getItemAt(cbStock[i].getSelectedIndex()));
-                        harga = Integer.parseInt((String)cbStock[i].getItemAt(cbStock[i].getSelectedIndex())) * Integer.parseInt(labelHargaBarang[i].getText());
-                        
-                        temp.idBarang = barangGenre.get(i).id;
-                        temp.idGenre = idGenre;
-                        temp.namaBarang = namaBarang;
-                        temp.jumlahPembelian = stock;
-                        temp.totalHarga = harga;
-                        temp.next = null;
-                        DummyDataManager.getInstance().getDummyData().addLastDetailTransaksi(temp);
+                        for(int j = 0; j < barangHead.size(); j++){
+                            if(barangHead.get(j).id == barangGenre.get(i).id){
+                                counter++;
+                                String str = Integer.toString(counter) + ". " + barangHead.get(j).namaBarang + " Stock Awal: " + Integer.toString(barangHead.get(j).stock);
+                                barangHead.get(j).stock = barangHead.get(j).stock + Integer.parseInt(tfStock[i].getText());
+                                str = str + " Stock Akhir: " + Integer.toString(barangHead.get(j).stock);
+                                barang.add(str);
+                            }
+                        }
                     }
                 }
                 if(cek){
                     frame.setVisible(false);
-                    new MenuPembayaran(head);
+                    String isi = "Stock Berhasil Ditambahkan!!\n";
+                    for(int i = 0; i < barang.size(); i++){
+                        isi = isi + barang.get(i) + "\n";
+                    }
+                    JOptionPane.showMessageDialog(null, isi);
+                    new MainMenuAdmin(head);
                 }else{
                     JOptionPane.showMessageDialog(null, "Silahkan Pilih Barang yang Ingin Dibeli!!");
                 }
@@ -105,29 +106,29 @@ public class MenuPesan {
         labelId = new JLabel[barangGenre.size()];
         labelNamaBarang = new JLabel[barangGenre.size()];
         labelHargaBarang = new JLabel[barangGenre.size()];
-        cbStock = new JComboBox[barangGenre.size()+1];
+        tfStock = new JTextField[barangGenre.size()+1];
         
         int y = 65;
         for(int i = 0; i < barangGenre.size(); i++){
-            String[] banyak = new String[barangGenre.get(i).stock+1];
-            for(int j = 0; j < barangGenre.get(i).stock+1; j++){
+            String[] banyak = new String[barangGenre.get(i).stock];
+            for(int j = 0; j < barangGenre.get(i).stock; j++){
                 banyak[j] = Integer.toString(j);
             }
             
             labelId[i] = new JLabel(Integer.toString(i+1) + ".");
             labelNamaBarang[i] = new JLabel(barangGenre.get(i).namaBarang);
             labelHargaBarang[i] = new JLabel(Integer.toString(barangGenre.get(i).harga));
-            cbStock[i] = new JComboBox(banyak);
+            tfStock[i] = new JTextField();
             
             labelId[i].setBounds(50, y, 100, 30);
             labelNamaBarang[i].setBounds(100, y, 200, 30);
             labelHargaBarang[i].setBounds(250, y, 100, 30);
-            cbStock[i].setBounds(400, y+5, 100, 20);
+            tfStock[i].setBounds(400, y+5, 100, 20);
             y = y + 25;
             frame.add(labelId[i]);
             frame.add(labelNamaBarang[i]);
             frame.add(labelHargaBarang[i]);
-            frame.add(cbStock[i]);
+            frame.add(tfStock[i]);
         }
         
         
