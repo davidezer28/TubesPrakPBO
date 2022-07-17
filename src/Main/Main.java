@@ -5,6 +5,13 @@
  */
 package Main;
 
+import Controller.DataManager;
+import Model.Data;
+import Controller.DatabaseControl;
+import Model.DataAdmin;
+import Model.DataCustomer;
+import View.MainMenuScreen;
+
 /**
  *
  * @author davidezer
@@ -16,9 +23,16 @@ public class Main {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        DummyData data = new DummyData();
-        DummyDataManager.getInstance().setDummyData(data);
-        MainMenuScreen mainMenuScreen = new MainMenuScreen();
+        Data data = new Data();
+        DatabaseControl controller = new DatabaseControl();
+        data.setUserHead(controller.getAllUser());
+        data.setAdminHead(controller.getAllAdmin());
+        data.setBarangHead(controller.getAllBarang());
+        data.setGenreHead(controller.getAllGenreBarang());
+        data.setTransaksiHead(controller.getAllTransaksi());
+        
+        DataManager.getInstance().setData(data);
+        new MainMenuScreen();
     }
     
 }
